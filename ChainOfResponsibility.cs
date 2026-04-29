@@ -19,7 +19,7 @@ namespace DesignPatterns.ChainOfResponsibility
             }
             else
             {
-                Console.WriteLine($"--- النهاية: لا يوجد أحد في المؤسسة يستطيع معالجة الطلب: '{request}' ---");
+                Console.WriteLine($"--- End: No one in the organization can handle the request: '{request}' ---");
             }
         }
     }
@@ -30,11 +30,11 @@ namespace DesignPatterns.ChainOfResponsibility
         {
             if (request == "technical")
             {
-                Console.WriteLine("المستوى 1 (الدعم الفني): تم حل المشكلة التقنية بنجاح.");
+                Console.WriteLine("Level 1 (Technical Support): The technical issue has been resolved successfully.");
             }
             else
             {
-                Console.WriteLine("المستوى 1 (الدعم الفني): مش تخصصي، بحولها للي بعدي...");
+                Console.WriteLine("Level 1 (Technical Support): Not my specialty, passing it to the next handler...");
                 base.Handle(request);
             }
         }
@@ -46,11 +46,11 @@ namespace DesignPatterns.ChainOfResponsibility
         {
             if (request == "billing")
             {
-                Console.WriteLine("المستوى 2 (قسم الحسابات): تم تسوية الفاتورة بنجاح.");
+                Console.WriteLine("Level 2 (Billing Support): The invoice has been settled successfully.");
             }
             else
             {
-                Console.WriteLine("المستوى 2 (قسم الحسابات): مش تخصصي، بحولها للي بعدي...");
+                Console.WriteLine("Level 2 (Billing Support): Not my specialty, passing it to the next handler...");
                 base.Handle(request);
             }
         }
@@ -62,11 +62,11 @@ namespace DesignPatterns.ChainOfResponsibility
         {
             if (request == "complaint")
             {
-                Console.WriteLine("المستوى 3 (المدير): تم حل الشكوى الإدارية بنجاح.");
+                Console.WriteLine("Level 3 (Manager): The administrative complaint has been resolved successfully.");
             }
             else
             {
-                Console.WriteLine("المستوى 3 (المدير): دي حاجة كبيرة، لازم تروح للمدير التنفيذي...");
+                Console.WriteLine("Level 3 (Manager): This is a big issue, it should go to the CEO...");
                 base.Handle(request);
             }
         }
@@ -78,11 +78,11 @@ namespace DesignPatterns.ChainOfResponsibility
         {
             if (request == "partnership")
             {
-                Console.WriteLine("المستوى 4 (المدير التنفيذي CEO): تم توقيع عقد الشراكة بنجاح.");
+                Console.WriteLine("Level 4 (CEO): The partnership agreement has been signed successfully.");
             }
             else
             {
-                Console.WriteLine("المستوى 4 (المدير التنفيذي CEO): حتى أنا مش هقدر أساعد في دي!");
+                Console.WriteLine("Level 4 (CEO): Even I cannot help with this request!");
                 base.Handle(request);
             }
         }
@@ -92,24 +92,24 @@ namespace DesignPatterns.ChainOfResponsibility
     {
         static void Main(string[] args)
         {
-            // إنشاء المعالجين
+            // Create handlers
             var tech = new TechnicalSupport();
             var billing = new BillingSupport();
             var manager = new Manager();
             var ceo = new CEO();
 
-            // بناء السلسلة الطويلة: Tech -> Billing -> Manager -> CEO
+            // Build the chain: Tech -> Billing -> Manager -> CEO
             tech.SetNext(billing);
             billing.SetNext(manager);
             manager.SetNext(ceo);
 
-            Console.WriteLine("--- تجربة طلب شراكة (Partnership) ---");
+            Console.WriteLine("--- Partnership request test ---");
             tech.Handle("partnership");
 
-            Console.WriteLine("\n--- تجربة طلب شكوى (Complaint) ---");
+            Console.WriteLine("\n--- Complaint request test ---");
             tech.Handle("complaint");
 
-            Console.WriteLine("\n--- تجربة طلب مجهول (Magic) ---");
+            Console.WriteLine("\n--- Unknown request test ---");
             tech.Handle("magic");
         }
     }

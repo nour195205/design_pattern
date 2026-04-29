@@ -2,43 +2,66 @@ using System;
 
 namespace DesignPatterns.Proxy
 {
-    public interface ISystem
+    public interface ISecureSystem
     {
-        void Access();
+        void OpenSecureSession();
     }
 
-    public class SecureSystem : ISystem
+    public interface IAuthenticationService
     {
-        public void Access()
+        bool Authenticate(string providedPassword);
+    }
+
+    public class SecureSystem : ISecureSystem
+    {
+        public SecureSystem()
         {
-            Console.WriteLine("تم الدخول للنظام السري (C#) بنجاح!");
+            Console.WriteLine("[Loading heavy system resources into memory...]");
+        }
+
+        public void OpenSecureSession()
+        {
+            Console.WriteLine("Secure session opened successfully!");
         }
     }
 
-    public class SystemProxy : ISystem
+    public class AuthenticationService : IAuthenticationService
     {
-        private SecureSystem _realSystem;
-        private string _password;
+        private readonly string _hashedPasswordFromConfig;
 
-        public SystemProxy(string password)
+        public AuthenticationService(string hashedPasswordFromConfig)
         {
-            _password = password;
+            _hashedPasswordFromConfig = hashedPasswordFromConfig;
         }
 
-        public void Access()
+        public bool Authenticate(string providedPassword)
         {
-            if (_password == "1234")
+            return providedPassword == _hashedPasswordFromConfig; 
+        }
+    }
+
+    public class SecureSystemProxy : ISecureSystem
+    {
+        private readonly Lazy<ISecureSystem> _realSystem;
+        private readonly IAuthenticationService _authService;
+        private readonly string _providedPassword;
+
+        public SecureSystemProxy(IAuthenticationService authService, string providedPassword)
+        {
+            _authService = authService;
+            _providedPassword = providedPassword;
+            _realSystem = new Lazy<ISecureSystem>(() => new SecureSystem());
+        }
+
+        public void OpenSecureSession()
+        {
+            if (!_authService.Authenticate(_providedPassword))
             {
-                if (_realSystem == null)
-                {
-                    _realSystem = new SecureSystem();
-                }
-                _realSystem.Access();
+                throw new Exception("Access denied: invalid authentication credentials.");
             }
-            else
-            {
-                Console.WriteLine("خطأ: كلمة المرور غلط! ممنوع الدخول في C#.");
-            }
+
+            Console.WriteLine("Authentication successful, redirecting to the secure system...");
+            _realSystem.Value.OpenSecureSession();
         }
     }
 
@@ -46,13 +69,30 @@ namespace DesignPatterns.Proxy
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("المحاولة الأولى:");
-            var p1 = new SystemProxy("0000");
-            p1.Access();
+            string passwordFromEnv = "SecureHash1234!"; 
+            var authService = new AuthenticationService(passwordFromEnv);
 
-            Console.WriteLine("\nالمحاولة الثانية:");
-            var p2 = new SystemProxy("1234");
-            p2.Access();
+            Console.WriteLine("--- First attempt (unauthorized access test) ---");
+            var intruder = new SecureSystemProxy(authService, "WrongPass");
+            try
+            {
+                intruder.OpenSecureSession();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Exception Caught]: {ex.Message}");
+            }
+
+            Console.WriteLine("\n--- Second attempt (authorized access and lazy loading test) ---");
+            var admin = new SecureSystemProxy(authService, "SecureHash1234!");
+            try
+            {
+                admin.OpenSecureSession();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Exception Caught]: {ex.Message}");
+            }
         }
     }
 }
