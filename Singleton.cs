@@ -18,13 +18,17 @@ namespace DesignPatterns.Singleton
         public static DatabaseManager GetInstance()
         {
             // Thread-safety لضمان الأمان في حالة تعدد الخيوط (Threads)
-            lock (_lock)
+            if (_instance == null)
             {
-                if (_instance == null)
+                lock (_lock)
                 {
-                    _instance = new DatabaseManager();
+                    if (_instance == null)
+                    {
+                        _instance = new DatabaseManager();
+                    }
                 }
             }
+
             return _instance;
         }
     }

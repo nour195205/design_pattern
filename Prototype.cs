@@ -3,34 +3,59 @@ using System.Collections.Generic;
 
 namespace DesignPatterns.Prototype
 {
-    public class GameCharacter
+    public interface IPrototype<T>
+    {
+        T Clone();
+    }
+
+    public class GameCharacter : IPrototype<GameCharacter>
     {
         public string Name { get; set; }
-        public List<string> Skills { get; set; }
+        public Equipment Gear { get; set; }
 
-        public GameCharacter(string name, List<string> skills)
+        public GameCharacter(string name, Equipment gear)
         {
             Name = name;
-            Skills = skills;
+            Gear = gear;
         }
 
-        // Shallow Copy: بينسخ القيم الأساسية بس، والقوائم بتشير لنفس المكان
         public GameCharacter ShallowClone()
         {
             return (GameCharacter)this.MemberwiseClone();
         }
 
-        // Deep Copy: بينسخ كل حاجة في مكان جديد تماماً
         public GameCharacter DeepClone()
         {
-            var clone = (GameCharacter)this.MemberwiseClone();
-            clone.Skills = new List<string>(this.Skills); // إنشاء قائمة جديدة تماماً
-            return clone;
+            GameCharacter clonedCharacter = (GameCharacter)this.MemberwiseClone();
+            clonedCharacter.Gear = this.Gear.Clone();
+            return clonedCharacter;
         }
 
         public override string ToString()
         {
-            return $"Name: {Name}, Skills: {string.Join(", ", Skills)}";
+            return $"Name: {Name}, Gear: {Gear}";
+        }
+    }
+
+    public class Equipment : IPrototype<Equipment>
+    {
+        public string Weapon { get; set; }
+        public int Durability { get; set; }
+
+        public Equipment(string weapon, int durability)
+        {
+            Weapon = weapon;
+            Durability = durability;
+        }
+
+        public Equipment Clone()
+        {
+            return new Equipment(Weapon, Durability);
+        }
+
+        public override string ToString()
+        {
+            return $"{Weapon} (Durability: {Durability})";
         }
     }
 
@@ -38,25 +63,26 @@ namespace DesignPatterns.Prototype
     {
         static void Main(string[] args)
         {
-            var original = new GameCharacter("Warrior", new List<string> { "Fight", "Run" });
+            var original = new GameCharacter(
+                name: "Warrior",
+                gear: new Equipment("Sword", 100)
+            );
 
-            // 1. Shallow Copy
-            var shallow = original.ShallowClone();
-            shallow.Name = "Shallow Hero";
-            shallow.Skills.Add("Jump"); // هيأثر على الأصل!
+            var shallowCopy = original.ShallowClone();
+            shallowCopy.Name = "Shallow Hero";
+            shallowCopy.Gear.Durability = 80;
 
-            Console.WriteLine("--- Shallow Copy Result ---");
+            Console.WriteLine("--- Shallow Copy ---");
             Console.WriteLine($"Original: {original}");
-            Console.WriteLine($"Shallow : {shallow}");
+            Console.WriteLine($"Shallow : {shallowCopy}");
 
-            // 2. Deep Copy
-            var deep = original.DeepClone();
-            deep.Name = "Deep Hero";
-            deep.Skills.Add("Fly"); // مش هيأثر على الأصل
+            var deepCopy = original.DeepClone();
+            deepCopy.Name = "Deep Hero";
+            deepCopy.Gear.Durability = 60;
 
-            Console.WriteLine("\n--- Deep Copy Result ---");
+            Console.WriteLine("\n--- Deep Copy ---");
             Console.WriteLine($"Original: {original}");
-            Console.WriteLine($"Deep    : {deep}");
+            Console.WriteLine($"Deep    : {deepCopy}");
         }
     }
 }
