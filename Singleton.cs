@@ -7,8 +7,6 @@ namespace DesignPatterns.Singleton
         private static DatabaseManager _instance;
         private static readonly object _lock = new object();
         public string ConnectionName { get; set; }
-
-        // Constructor private عشان مفيش حد يقدر يعمل منه نسخة بره الكلاس
         private DatabaseManager()
         {
             Console.WriteLine("--- إنشاء اتصال جديد بقاعدة البيانات (C#) ---");

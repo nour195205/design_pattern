@@ -42,13 +42,14 @@ namespace DesignPatterns.Proxy
 
     public class SecureSystemProxy : ISecureSystem
     {
+        private const string _internalPassword = "SecureHash1234!";
         private readonly Lazy<ISecureSystem> _realSystem;
         private readonly IAuthenticationService _authService;
         private readonly string _providedPassword;
 
-        public SecureSystemProxy(IAuthenticationService authService, string providedPassword)
+        public SecureSystemProxy(string providedPassword)
         {
-            _authService = authService;
+            _authService = new AuthenticationService(_internalPassword);
             _providedPassword = providedPassword;
             _realSystem = new Lazy<ISecureSystem>(() => new SecureSystem());
         }
@@ -69,11 +70,8 @@ namespace DesignPatterns.Proxy
     {
         static void Main(string[] args)
         {
-            string passwordFromEnv = "SecureHash1234!"; 
-            var authService = new AuthenticationService(passwordFromEnv);
-
             Console.WriteLine("--- First attempt (unauthorized access test) ---");
-            var intruder = new SecureSystemProxy(authService, "WrongPass");
+            var intruder = new SecureSystemProxy("WrongPass");
             try
             {
                 intruder.OpenSecureSession();
@@ -84,7 +82,7 @@ namespace DesignPatterns.Proxy
             }
 
             Console.WriteLine("\n--- Second attempt (authorized access and lazy loading test) ---");
-            var admin = new SecureSystemProxy(authService, "SecureHash1234!");
+            var admin = new SecureSystemProxy("SecureHash1234!");
             try
             {
                 admin.OpenSecureSession();

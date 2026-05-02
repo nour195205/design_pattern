@@ -3,12 +3,7 @@ using System.Collections.Generic;
 
 namespace DesignPatterns.Prototype
 {
-    public interface IPrototype<T>
-    {
-        T Clone();
-    }
-
-    public class GameCharacter : IPrototype<GameCharacter>
+    public class GameCharacter
     {
         public string Name { get; set; }
         public Equipment Gear { get; set; }
@@ -37,7 +32,7 @@ namespace DesignPatterns.Prototype
         }
     }
 
-    public class Equipment : IPrototype<Equipment>
+    public class Equipment
     {
         public string Weapon { get; set; }
         public int Durability { get; set; }
@@ -47,12 +42,10 @@ namespace DesignPatterns.Prototype
             Weapon = weapon;
             Durability = durability;
         }
-
         public Equipment Clone()
         {
             return new Equipment(Weapon, Durability);
         }
-
         public override string ToString()
         {
             return $"{Weapon} (Durability: {Durability})";
