@@ -9,13 +9,13 @@ namespace DesignPatterns.Singleton
         public string ConnectionName { get; set; }
         private DatabaseManager()
         {
-            Console.WriteLine("--- إنشاء اتصال جديد بقاعدة البيانات (C#) ---");
+            Console.WriteLine("--- Creating a new database connection (C#) ---");
             ConnectionName = "Main_C#_DB_Connection";
         }
 
         public static DatabaseManager GetInstance()
         {
-            // Thread-safety لضمان الأمان في حالة تعدد الخيوط (Threads)
+            // Thread-safety to ensure safety in multi-threaded scenarios
             if (_instance == null)
             {
                 lock (_lock)
@@ -43,7 +43,7 @@ namespace DesignPatterns.Singleton
 
             if (db1 == db2)
             {
-                Console.WriteLine("برافو! النسختين متطابقتين تماماً في C#.");
+                Console.WriteLine("Success! Both instances are identical in C#.");
             }
         }
     }

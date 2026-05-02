@@ -18,27 +18,27 @@ namespace DesignPatterns.Factory
 
     public class PdfDocument : IDocument
     {
-        public void Show() => Console.WriteLine("عرض ملف PDF (C#)");
+        public void Show() => Console.WriteLine("Showing PDF document (C#)");
     }
 
     public class WordDocument : IDocument
     {
-        public void Show() => Console.WriteLine("عرض ملف Word (C#)");
+        public void Show() => Console.WriteLine("Showing Word document (C#)");
     }
 
     public class ExcelDocument : IDocument
     {
-        public void Show() => Console.WriteLine("عرض ملف Excel (C#) - جداول البيانات جاهزة.");
+        public void Show() => Console.WriteLine("Showing Excel document (C#) - Spreadsheet is ready.");
     }
 
     public class PptDocument : IDocument
     {
-        public void Show() => Console.WriteLine("عرض ملف PowerPoint (C#) - العرض التقديمي جاهز.");
+        public void Show() => Console.WriteLine("Showing PowerPoint document (C#) - Presentation is ready.");
     }
 
     public class ImageDocument : IDocument
     {
-        public void Show() => Console.WriteLine("عرض ملف Image (C#) - تم تحميل الصورة بنجاح.");
+        public void Show() => Console.WriteLine("Showing Image document (C#) - Image loaded successfully.");
     }
 
     public static class DocumentFactory
@@ -52,7 +52,7 @@ namespace DesignPatterns.Factory
                 case DocumentType.Excel: return new ExcelDocument();
                 case DocumentType.Ppt: return new PptDocument();
                 case DocumentType.Image: return new ImageDocument();
-                default: throw new ArgumentOutOfRangeException(nameof(type), "نوع الملف غير مدعوم في المصنع.");
+                default: throw new ArgumentOutOfRangeException(nameof(type), "Unsupported document type in factory.");
             }
         }
     }
@@ -61,7 +61,7 @@ namespace DesignPatterns.Factory
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("--- تجربة المصنع مع أنواع ملفات متعددة ---");
+            Console.WriteLine("--- Factory test with multiple document types ---");
 
             var doc1 = DocumentFactory.CreateDocument(DocumentType.Pdf);
             doc1.Show();
@@ -76,12 +76,12 @@ namespace DesignPatterns.Factory
             doc4.Show();
 
             try {
-                // مثال على عدم السماح بنوع غير معروف: سيتم اكتشاف الخطأ أثناء البرمجة وليس من النص.
+                // Example of rejecting an unknown type: the error is a code-time safety check, not text-based.
                 var invalidType = (DocumentType)999;
                 var doc5 = DocumentFactory.CreateDocument(invalidType);
                 doc5.Show();
             } catch (ArgumentOutOfRangeException ex) {
-                Console.WriteLine($"\nخطأ متوقع: {ex.Message}");
+                Console.WriteLine($"\nExpected error: {ex.Message}");
             }
         }
     }
